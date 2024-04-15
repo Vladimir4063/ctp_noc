@@ -1,0 +1,138 @@
+{% extends "layout.html" %}
+{% block body %}
+
+<a href="/" style="color: black;">
+    <h3>Parts Categories
+</a> > Filters</h3>
+<div class="col-md-8 p-4">
+
+    <!-- input -->
+    <div class="mb-3 row">
+        <label for="staticEmail" class="col-sm-2 col-form-label">Description</label>
+        <div class="col-sm-5">
+            <input type="text" class="form-control" id="description" value="{{ desc }}" />
+        </div>
+    </div>
+    <div class="mb-3 row">
+        <label for="inputPassword" class="col-sm-2 col-form-label">Abbreviation</label>
+        <div class="col-sm-2">
+            <input type="text" class="form-control" id="abbreviation" value="{{ abbre }}" />
+        </div>
+    </div>
+
+    <!-- table -->
+    <p>Sub Categories</p>
+    <table class="table table-striped table-hover table-bordered table-sm bg-white">
+        <thead>
+            <tr>
+                <td><strong>Description</strong></td>
+                <td style="width: 20px;"><strong>Abbreviation</strong></td>
+                <td style="width: 20px;"><strong>Actions</strong></td>
+            </tr>
+        </thead>
+        <tbody>
+            {% for filter in filters_list %}
+            <tr>
+                <td>{{ filter[2] }}</td>
+                <td>{{ filter[3] }}</td>
+                <td style="text-align: center;">
+                    <a style="color: green;"
+                        href="/update_subcategory/{{filter[0]}};{{filter[1]}};{{filter[2]}};{{filter[3]}}"><i
+                            class="bi bi-pencil-fill"></i></a>
+                    <!-- <a href="/delete_subcategory/{{filter[0]}};{{filter[1]}}"><i class="bi bi-trash3-fill"></i></a> -->
+                    <a style="color: red;" href="#" onclick="confirmDelete('{{ filter[0] }}', '{{ filter[1] }}')"><i
+                            class="bi bi-trash3-fill"></i></a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- FORM ADD ROW -->
+
+    <form class="row g-3" method="POST">
+        <div class="col-md-6">
+            <input type="text" class="form-control" name="description" placeholder="Description">
+        </div>
+        <div class="col-md-2">
+            <input type="text" class="form-control" name="abbreviation" placeholder="Abbreviation">
+        </div>
+        <div class="col-md-4">
+            <button type="submit" class="btn btn-link"><i class="bi bi-plus-circle-fill"></i></button>
+        </div>
+    </form>
+
+    <!-- Button trigger modal -->
+    <!-- <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+        Launch demo modal
+    </button> -->
+
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    ...
+                    <form class="row g-3" method="POST">
+                        <div class="col-sm-5">
+                            <input type="text" class="form-control" id="description" value="{{ desc }}" />
+                        </div>
+                        <div class="col-sm-2">
+                            <input type="text" class="form-control" id="abbreviation" value="{{ abbre }}" />
+                        </div>
+                        <div class="col-md-4">
+                            <button type="submit" class="btn btn-link"><i class="bi bi-plus-circle-fill"></i></button>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Save changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Incluir SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+
+    <!-- Script personalizado para mostrar SweetAlert2 -->
+    <script>
+        function confirmDelete(id, descripcion) {
+            Swal.fire({
+                title: '¿Are you sure to delete this record?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#F79F00',
+                confirmButtonText: 'Yes, delete',
+                cancelButtonText: 'Cancel',
+                customClass: {
+                    confirmButton: 'swal2-confirm-custom',
+                    cancelButton: 'swal2-cancel-custom'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Si se confirma la eliminación, redirigir a la ruta de eliminación
+                    window.location.href = `/delete_subcategory/${id};${descripcion}`;
+                }
+            });
+        }
+    </script>
+    <style>
+        .swal2-confirm-custom {
+            border-radius: 0 !important;
+            /* Hacer que el botón Confirmar sea cuadrado */
+        }
+
+        .swal2-cancel-custom {
+            border-radius: 0 !important;
+            /* Hacer que el botón Cancelar sea cuadrado */
+        }
+    </style>
+</div>
+
+{% endblock %}
