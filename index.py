@@ -1,19 +1,75 @@
-from flask import Flask, render_template, request
+from flask import Flask, redirect, render_template, request
 from database.db import *
 
 app = Flask(__name__)
 
-
 @app.route("/")
 def home():
+    return render_template("index.html")
+
+
+@app.route("/supplystatus", methods=["GET", "POST"])
+def supplystatus():
+    if request.method == "POST":
+        description = request.form["description"]
+        conexion = obtener_conexion()
+        cursor = conexion.cursor()
+        cursor.execute(
+            "INSERT INTO ctp_supply_status (description) VALUES (%s)", (description,)
+        )
+        conexion.commit()
+
+        # render seccion
+        cursor.execute("SELECT * FROM ctp_supply_status")
+        supply_status = cursor.fetchall()
+        cursor.close()
+        conexion.close()
+        return render_template("supply_status.html", supply_status=supply_status)
+
+    else:
+        conexion = obtener_conexion()
+        cursor = conexion.cursor()
+        cursor.execute("SELECT * FROM ctp_supply_status")
+        supply_status = cursor.fetchall()
+        cursor.close()
+        conexion.close()
+        return render_template("supply_status.html", supply_status=supply_status)
+
+@app.route("/delete_supply_status/<id>", methods=["GET", "POST"])
+def delete_supply_status(id):
+    conexion = obtener_conexion()
+    cursor = conexion.cursor()
+    cursor.execute("DELETE FROM ctp_supply_status WHERE status_id = %s", (id,))
+    conexion.commit()
+    cursor.close()
+    conexion.close()
+    return redirect("/supplystatus")
+
+@app.route("/update_supply_status/<id>;<desc>", methods=["GET", "POST"])
+def update_supply_status(id, desc):
+    if request.method == "POST":
+        descripcion_new = request.form['description']
+        conexion = obtener_conexion()
+        cursor = conexion.cursor()
+        cursor.execute("UPDATE ctp_supply_status SET description = %s WHERE status_id = %s", (descripcion_new ,id))
+        conexion.commit()
+        cursor.close()
+        conexion.close()
+        return redirect("/supplystatus")
+    else:
+        return render_template("update_supply_status.html", desc=desc)
+    
+
+
+@app.route("/categories")
+def categories():
     conexion = obtener_conexion()
     cursor = conexion.cursor()
     cursor.execute("SELECT * FROM ctp_categories")
     parts_categories = cursor.fetchall()
     cursor.close()
     conexion.close()
-    return render_template("index.html", parts_categories=parts_categories)
-
+    return render_template("categories.html", parts_categories=parts_categories)
 
 @app.route("/subcategory/<id>;<desc>;<abbre>", methods=["GET", "POST"])
 def subcategory(id, desc, abbre):
@@ -55,7 +111,7 @@ def subcategory(id, desc, abbre):
         )
 
 @app.route("/update_subcategory/<id>;<subid>;<desc>;<abbre>", methods=["GET", "POST"])
-def add_subcategory(id, subid, desc, abbre):
+def update_subcategory(id, subid, desc, abbre):
 
     if request.method == "POST":
         description = request.form["description"]
@@ -82,10 +138,6 @@ def add_subcategory(id, subid, desc, abbre):
         )
 
     else:
-        print(subid)
-        print(desc)
-        print(abbre)
-
         return render_template("update_subcategory.html", desc = desc, abbre = abbre)
 
 @app.route("/delete_subcategory/<id>;<subid>", methods=["GET", "POST"])
@@ -110,6 +162,3 @@ def delete_subcategory(id, subid):
         "filters.html", filters_list=filters_list
     )
     
-
-if __name__ == "__main__":
-    app.run(debug=True)

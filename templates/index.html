@@ -1,26 +1,25 @@
 {% extends "layout.html" %}
 {% block body %}
 
-<h3>Parts Categories</h3>
+<ul style="text-decoration: none;">
+    <li>
+        <a>Home</a>
+    </li>
+</ul>
 <div class="col-md-8 p-4">
-    <table class="table table-striped table-hover table-bordered table-sm bg-white">
-        <thead>
-            <tr>
-                <td><strong>Description</strong></td>
-                <td style="
-width: 20px;"><strong>Abbreviation</strong></td>
-            </tr>
-        </thead>
-        <tbody>
-            {% for parts in parts_categories %}
-            <tr>
-                <td><a href="/subcategory/{{ parts[0] }};{{ parts[1] }};{{ parts[2] }}" style="text-decoration: none; color: black;">{{ parts[1] }}</a></td>
-                <td><a href="/subcategory/{{ parts[0] }};{{ parts[1] }};{{ parts[2] }}" style="text-decoration: none; color: black;">{{ parts[2] }}</a></td>
-            </tr>
-            {% endfor %}
-        </tbody>
+    <!-- List Home -->
+    <div class="list-group">
+        <button type="button" class="list-group-item list-group-item-action active" aria-current="true">
+            Options
+        </button>
+        <button onclick="location.href='/categories'" type="button" class="list-group-item list-group-item-action">
+            Categories
+        </button>
+        <button onclick="location.href='/supplystatus'" type="button" class="list-group-item list-group-item-action">
+            Supply Status
+        </button>
+    </div>
 
-    </table>
 </div>
 
 {% endblock %}

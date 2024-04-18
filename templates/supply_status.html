@@ -1,57 +1,32 @@
 {% extends "layout.html" %}
 {% block body %}
 
-<!-- <a href="/categories" style="color: black;">
-    <h3>Parts Categories
-</a> > Filters</h3> -->
-
-<ul style="text-decoration: none;">
+<ul>
     <li>
         <a style="color: black;" href="/">Home</a>
-        <a>></a>
-        <a style="color: black;" href="/categories">Categories</a>
-        <a>> Filters</a>
+        <a>> Supply Status</a>
     </li>
 </ul>
 
 <div class="col-md-8 p-4">
 
-    <!-- input -->
-    <div class="mb-3 row">
-        <label for="staticEmail" class="col-sm-2 col-form-label">Description</label>
-        <div class="col-sm-5">
-            <input type="text" class="form-control" id="description" value="{{ desc }}" />
-        </div>
-    </div>
-    <div class="mb-3 row">
-        <label for="inputPassword" class="col-sm-2 col-form-label">Abbreviation</label>
-        <div class="col-sm-2">
-            <input type="text" class="form-control" id="abbreviation" value="{{ abbre }}" />
-        </div>
-    </div>
-
     <!-- table -->
-    <p>Sub Categories</p>
     <table class="table table-striped table-hover table-bordered table-sm bg-white">
         <thead>
             <tr>
                 <td><strong>Description</strong></td>
-                <td style="width: 20px;"><strong>Abbreviation</strong></td>
                 <td style="width: 20px;"><strong>Actions</strong></td>
             </tr>
         </thead>
         <tbody>
-            {% for filter in filters_list %}
+            {% for status in supply_status %}
             <tr>
-                <td>{{ filter[2] }}</td>
-                <td>{{ filter[3] }}</td>
+                <td>{{ status[1] }}</td>
                 <td style="text-align: center;">
-                    <a style="color: green;"
-                        href="/update_subcategory/{{filter[0]}};{{filter[1]}};{{filter[2]}};{{filter[3]}}"><i
+                    <a style="color: green;" href="/update_supply_status/{{status[0]}};{{status[1]}}"><i
                             class="bi bi-pencil-fill"></i></a>
-                    <!-- <a href="/delete_subcategory/{{filter[0]}};{{filter[1]}}"><i class="bi bi-trash3-fill"></i></a> -->
-                    <a style="color: red;" href="#" onclick="confirmDelete('{{ filter[0] }}', '{{ filter[1] }}')"><i
-                            class="bi bi-trash3-fill"></i></a>
+                    <!-- <a href="/delete_supply_status/{{status[0]}}"><i class="bi bi-trash3-fill"></i></a> -->
+                    <a style="color: red;" href="#" onclick="confirmDelete('{{ status[0] }}')"><i class="bi bi-trash3-fill"></i></a>
                 </td>
             </tr>
             {% endfor %}
@@ -63,9 +38,6 @@
     <form class="row g-3" method="POST">
         <div class="col-md-6">
             <input type="text" class="form-control" name="description" placeholder="Description">
-        </div>
-        <div class="col-md-2">
-            <input type="text" class="form-control" name="abbreviation" placeholder="Abbreviation">
         </div>
         <div class="col-md-4">
             <button type="submit" class="btn btn-link"><i class="bi bi-plus-circle-fill"></i></button>
@@ -127,7 +99,7 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                     // Si se confirma la eliminación, redirigir a la ruta de eliminación
-                    window.location.href = `/delete_subcategory/${id};${descripcion}`;
+                    window.location.href = `/delete_supply_status/${id}`;
                 }
             });
         }
