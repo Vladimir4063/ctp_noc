@@ -1,7 +1,9 @@
-from flask import Flask, redirect, render_template, request
+from flask import Flask, redirect, render_template, request, flash
 from database.db import *
 
 app = Flask(__name__)
+
+app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
 
 @app.route("/")
 def home():
@@ -14,17 +16,27 @@ def supplystatus():
         description = request.form["description"]
         conexion = obtener_conexion()
         cursor = conexion.cursor()
-        cursor.execute(
-            "INSERT INTO ctp_supply_status (description) VALUES (%s)", (description,)
-        )
-        conexion.commit()
 
-        # render seccion
-        cursor.execute("SELECT * FROM ctp_supply_status")
-        supply_status = cursor.fetchall()
-        cursor.close()
-        conexion.close()
-        return render_template("supply_status.html", supply_status=supply_status)
+        cant = description.strip()
+        if cant != "":
+            cursor.execute(
+                "INSERT INTO ctp_supply_status (description) VALUES (%s)", (description,)
+            )
+            conexion.commit()
+            cursor.execute("SELECT * FROM ctp_supply_status")
+            supply_status = cursor.fetchall()
+            cursor.close()
+            conexion.close()
+            return render_template("supply_status.html", supply_status=supply_status)
+
+        else:
+            # render seccion
+            cursor.execute("SELECT * FROM ctp_supply_status")
+            supply_status = cursor.fetchall()
+            cursor.close()
+            conexion.close()
+            flash("Please enter valid characters.")
+            return render_template("supply_status.html", supply_status=supply_status)
 
     else:
         conexion = obtener_conexion()
@@ -79,23 +91,72 @@ def subcategory(id, desc, abbre):
 
         conexion = obtener_conexion()
         cursor = conexion.cursor()
-        cursor.execute(
-            "INSERT INTO ctp_subcategories (FKCategory, SubCatDescr, SubCategory) VALUES (%s, %s, %s);",
-            (id, description, abbreviation,)
-        )
-        conexion.commit()
 
-        # Renderizo nuevamente la pantalla 
-        cursor.execute(
-            "SELECT * FROM ctp_subcategories cs WHERE FKCategory = %s", (id,)
-        )
-        filters_list = cursor.fetchall()
-        cursor.close()
-        conexion.close()
+        desc = description.strip()
+        abbre = abbreviation.strip()
+        if desc == "" or abbre == "":
+            if desc != "":
+                if abbre != "":
+                    cursor.execute(
+                        "INSERT INTO ctp_subcategories (FKCategory, SubCatDescr, SubCategory) VALUES (%s, %s, %s);",
+                        (id, description, abbreviation,)
+                    )
+                    conexion.commit()
 
-        return render_template(
-            "filters.html", filters_list=filters_list, desc=desc, abbre=abbre
-        )
+                    # Renderizo nuevamente la pantalla 
+                    cursor.execute(
+                        "SELECT * FROM ctp_subcategories cs WHERE FKCategory = %s", (id,)
+                    )
+                    filters_list = cursor.fetchall()
+                    cursor.close()
+                    conexion.close()
+
+                    return render_template(
+                        "filters.html", filters_list=filters_list, desc=desc, abbre=abbre
+                    )
+                else:
+                    flash("Please enter valid characters.")
+
+                    # Renderizo nuevamente la pantalla 
+                    cursor.execute(
+                        "SELECT * FROM ctp_subcategories cs WHERE FKCategory = %s", (id,)
+                    )
+                    filters_list = cursor.fetchall()
+                    cursor.close()
+                    conexion.close()
+
+                    return render_template(
+                        "filters.html", filters_list=filters_list, desc=desc, abbre=abbre
+                    )
+            
+            else:
+                flash("Please enter valid characters.")
+
+                # Renderizo nuevamente la pantalla 
+                cursor.execute(
+                    "SELECT * FROM ctp_subcategories cs WHERE FKCategory = %s", (id,)
+                )
+                filters_list = cursor.fetchall()
+                cursor.close()
+                conexion.close()
+
+                return render_template(
+                    "filters.html", filters_list=filters_list, desc=desc, abbre=abbre
+                )
+        else: 
+            flash("Please enter valid characters.")
+
+            # Renderizo nuevamente la pantalla 
+            cursor.execute(
+                "SELECT * FROM ctp_subcategories cs WHERE FKCategory = %s", (id,)
+            )
+            filters_list = cursor.fetchall()
+            cursor.close()
+            conexion.close()
+
+            return render_template(
+                "filters.html", filters_list=filters_list, desc=desc, abbre=abbre
+            )
     else:
         conexion = obtener_conexion()
         cursor = conexion.cursor()
