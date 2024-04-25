@@ -1,5 +1,5 @@
 from flask import Flask, redirect, render_template, request, flash
-from flask_paginate import Pagination
+# from flask_paginate import Pagination
 from database.db import *
 
 app = Flask(__name__)
@@ -43,58 +43,67 @@ def non_returnable_parts():
         conexion = obtener_conexion()
         cursor = conexion.cursor()
 
-        # count total
+        #         # count total
+        #         cursor.execute(
+        #             """SELECT COUNT(*) FROM (
+        #     SELECT PARTNO, IMDSC, IMPC1, IMPC2, IMCATA, IMSBCA,
+        #     (SELECT TRIM(CNTDE1) FROM CNTRLL WHERE CNT01 = '110' AND TRIM(CNT02) = '' AND TRIM(CNT03)= IMPC1) AS MJRDSC,
+        #     (SELECT TRIM(CNTDE1) FROM CNTRLL WHERE CNT01 = '120' AND TRIM(CNT02) = '' AND TRIM(CNT03) = IMPC2) AS MNRDSC,
+        #     (SELECT TRIM(INDESC) FROM INMCAT WHERE TRIM(INCATA) = IMCATA) AS CATDSC,
+        #     (SELECT TRIM(INDESS) FROM INMCAS WHERE TRIM(INSBCA) = IMSBCA) AS SUBDSC
+        #     FROM PARTSNONR
+        #     INNER JOIN INMSTA ON PARTSNONR.PARTNO = INMSTA.IMPTN
+        # ) AS total"""
+        #         )
+
+        #         count = cursor.fetchone()[0]
+
+        #         # Obtener el número de página actual y la cantidad de resultados por página
+        #         page_num = request.args.get("page", 1, type=int)
+        #         per_page = 15
+
+        #         # Calcular el índice del primer registro y limitar la consulta a un rango de registros
+        #         start_index = (page_num - 1) * per_page + 1
+
+        #         querySQL = (
+        #             f"SELECT PARTNO, IMDSC, IMPC1, IMPC2, IMCATA, IMSBCA, (SELECT TRIM(CNTDE1) FROM CNTRLL WHERE CNT01 = '110' AND TRIM(CNT02) = '' AND TRIM(CNT03)= IMPC1) MJRDSC,(SELECT TRIM(CNTDE1) FROM CNTRLL WHERE CNT01 = '120' AND TRIM(CNT02)= '' AND TRIM(CNT03) = IMPC2) MNRDSC, (SELECT TRIM(INDESC) FROM INMCAT WHERE TRIM(INCATA) = IMCATA) CATDSC, (SELECT TRIM(INDESS) FROM INMCAS WHERE TRIM(INSBCA)= IMSBCA) SUBDSC FROM PARTSNONR INNER JOIN INMSTA ON PARTSNONR.PARTNO = INMSTA.IMPTN"
+        #             f" LIMIT {per_page} OFFSET {start_index - 1}"
+        #         )
+
+        #         cursor.execute(querySQL)
+        #         non_returnable_parts = cursor.fetchall()
+
+        #         # Calcular el índice del último registro
+        #         end_index = min(start_index + per_page, count)
+        #         # end_index = start_index + per_page - 1
+        #         if end_index > count:
+        #             end_index = count
+
+        #         # Crear objeto paginable
+        #         pagination = Pagination(
+        #             page=page_num,
+        #             total=count,
+        #             per_page=per_page,
+        #             display_msg=f"Mostrando registros {start_index} - {end_index} de un total de <strong>{count}</strong>",
+        #         )
+        #         conexion.commit()
+
+        # TAREA: Enviar en return : pagination=pagination
+
         cursor.execute(
-            """SELECT COUNT(*) FROM (
-    SELECT PARTNO, IMDSC, IMPC1, IMPC2, IMCATA, IMSBCA, 
-    (SELECT TRIM(CNTDE1) FROM CNTRLL WHERE CNT01 = '110' AND TRIM(CNT02) = '' AND TRIM(CNT03)= IMPC1) AS MJRDSC,
-    (SELECT TRIM(CNTDE1) FROM CNTRLL WHERE CNT01 = '120' AND TRIM(CNT02) = '' AND TRIM(CNT03) = IMPC2) AS MNRDSC, 
-    (SELECT TRIM(INDESC) FROM INMCAT WHERE TRIM(INCATA) = IMCATA) AS CATDSC,
-    (SELECT TRIM(INDESS) FROM INMCAS WHERE TRIM(INSBCA) = IMSBCA) AS SUBDSC 
-    FROM PARTSNONR 
-    INNER JOIN INMSTA ON PARTSNONR.PARTNO = INMSTA.IMPTN
-) AS total"""
+            """SELECT PARTNO, IMDSC, IMPC1, IMPC2, IMCATA, IMSBCA, (SELECT TRIM(CNTDE1) FROM CNTRLL WHERE
+CNT01 = '110' AND TRIM(CNT02) = '' AND TRIM(CNT03)= IMPC1) MJRDSC,(SELECT TRIM(CNTDE1) FROM
+CNTRLL WHERE CNT01 = '120' AND TRIM(CNT02)= '' AND TRIM(CNT03) = IMPC2) MNRDSC, (SELECT TRIM(INDESC)
+FROM INMCAT WHERE TRIM(INCATA) = IMCATA) CATDSC,
+(SELECT TRIM(INDESS) FROM INMCAS WHERE TRIM(INSBCA)= IMSBCA) SUBDSC FROM PARTSNONR INNER JOIN INMSTA ON PARTSNONR.PARTNO = INMSTA.IMPTN"""
         )
-
-        count = cursor.fetchone()[0]
-
-        # Obtener el número de página actual y la cantidad de resultados por página
-        page_num = request.args.get("page", 1, type=int)
-        per_page = 15
-
-        # Calcular el índice del primer registro y limitar la consulta a un rango de registros
-        start_index = (page_num - 1) * per_page + 1
-
-        querySQL = (
-            f"SELECT PARTNO, IMDSC, IMPC1, IMPC2, IMCATA, IMSBCA, (SELECT TRIM(CNTDE1) FROM CNTRLL WHERE CNT01 = '110' AND TRIM(CNT02) = '' AND TRIM(CNT03)= IMPC1) MJRDSC,(SELECT TRIM(CNTDE1) FROM CNTRLL WHERE CNT01 = '120' AND TRIM(CNT02)= '' AND TRIM(CNT03) = IMPC2) MNRDSC, (SELECT TRIM(INDESC) FROM INMCAT WHERE TRIM(INCATA) = IMCATA) CATDSC, (SELECT TRIM(INDESS) FROM INMCAS WHERE TRIM(INSBCA)= IMSBCA) SUBDSC FROM PARTSNONR INNER JOIN INMSTA ON PARTSNONR.PARTNO = INMSTA.IMPTN"
-            f" LIMIT {per_page} OFFSET {start_index - 1}"
-        )
-
-        cursor.execute(querySQL)
         non_returnable_parts = cursor.fetchall()
-
-        # Calcular el índice del último registro
-        end_index = min(start_index + per_page, count)
-        # end_index = start_index + per_page - 1
-        if end_index > count:
-            end_index = count
-
-        # Crear objeto paginable
-        pagination = Pagination(
-            page=page_num,
-            total=count,
-            per_page=per_page,
-            display_msg=f"Mostrando registros {start_index} - {end_index} de un total de <strong>{count}</strong>",
-        )
-        conexion.commit()
-
         cursor.close()
         conexion.close()
 
         return render_template(
             "/non_returnable_parts.html",
-            non_returnable_parts=non_returnable_parts,
-            pagination=pagination,
+            non_returnable_parts=non_returnable_parts
         )
 
 
