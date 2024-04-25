@@ -9,3 +9,6 @@ Activarlo:
 
 Instalar las dependencias:
 -pip install -r requirements.txt
+
+Librerias especificas:
+-pip install flask-paginate

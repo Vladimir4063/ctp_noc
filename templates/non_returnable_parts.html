@@ -1,0 +1,116 @@
+{% extends "layout.html" %}
+{% block body %}
+
+<ul>
+    <li>
+        <a style="color: black;" href="/">Home</a>
+        <a>> Non Returnable Parts</a>
+    </li>
+</ul>
+
+<div class="col-md-12 p-4">
+
+    <!-- FORM ADD ROW -->
+    <form class="row g-3" method="POST">
+        <div class="col-md-3">
+            <input type="text" class="form-control" name="part-nro" placeholder="Part No." required>
+        </div>
+        <div class="col-md-4">
+            <button type="submit" class="btn btn-warning"><i class="bi bi-plus-circle-fill"></i> ADD NEW PART</button>
+        </div>
+    </form>
+    <div class="col-md-4">
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-warning alert-dismissible" role="alert">
+            <strong>{{ message }}</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+    </div>
+
+    <!-- table -->
+    <table class="table table-striped table-hover table-bordered table-sm bg-white">
+        <thead>
+            <tr>
+                <td><strong></strong></td>
+                <td><strong>Part No.</strong></td>
+                <td><strong>Description</strong></td>
+                <td><strong>Major Code</strong></td>
+                <td><strong>Category</strong></td>
+                <td><strong>Subcategory</strong></td>
+                <td><strong>Minor Code</strong></td>
+            </tr>
+        </thead>
+        <tbody>
+            {% for parts in non_returnable_parts %}
+            <tr>
+                <td style="text-align: center;">
+                    <!-- <a style="color: green;" href="/update_supply_status/{{parts[0]}};{{parts[1]}}"><i
+                            class="bi bi-pencil-fill"></i></a> -->
+                    <!-- <a href="/delete_supply_status/{{parts[0]}}"><i class="bi bi-trash3-fill"></i></a> -->
+                    <a style="color: red;" href="#" onclick="confirmDelete('{{ parts[0] }}')"><i class="bi bi-trash3-fill"></i></a>
+                </td>
+                <td>{{ parts[0] }}</td>
+                <td>{{ parts[1] }}</td>
+                <td>{{ parts[2] }} - {{ parts[6] }}</td>
+                <td>{{ parts[4] }} - {{ parts[8] }}</td>
+                <td>{{ parts[5] }} - {{ parts[9] }}</td>
+                <td>{{ parts[3] }} - {{ parts[7] }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="row justify-content-md-center">
+        <div class="col-md-auto">
+            <span style="text-align: center;">
+                {{ pagination.info }}
+                <hr />
+            </span>
+            {{ pagination.links }}
+        </div>
+    </div>
+
+    <!-- CDN SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+
+    <!-- Script personalizado para mostrar SweetAlert2 -->
+    <script>
+        function confirmDelete(part_no) {
+            Swal.fire({
+                title: '¿Are you sure to delete this record?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#F79F00',
+                confirmButtonText: 'Yes, delete',
+                cancelButtonText: 'Cancel',
+                customClass: {
+                    confirmButton: 'swal2-confirm-custom',
+                    cancelButton: 'swal2-cancel-custom'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Si se confirma la eliminación, redirigir a la ruta de eliminación
+                    window.location.href = `/delete_non_returnable/${part_no}`;
+                }
+            });
+        }
+    </script>
+    <style>
+        .swal2-confirm-custom {
+            border-radius: 0 !important;
+            /* Hacer que el botón Confirmar sea cuadrado */
+        }
+
+        .swal2-cancel-custom {
+            border-radius: 0 !important;
+            /* Hacer que el botón Cancelar sea cuadrado */
+        }
+    </style>
+</div>
+
+{% endblock %}
