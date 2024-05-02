@@ -1,0 +1,62 @@
+{% extends "layout.html" %}
+{% block body %}
+
+
+<div class="container">
+
+    <!-- Navigation -->
+    <ul style="text-decoration: none;">
+        <li>
+            <a style="color: black;" href="/">Home</a>
+            <a>> Change Agent</a>
+        </li>
+    </ul>
+
+
+    <div class="container d-flex" style="justify-content: center;">
+        <div class="col-md-4">
+
+            <!-- FORM  -->
+            <form method="POST">
+                <!-- CHECKBOXS -->
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1">
+                    <label class="form-check-label" for="inlineCheckbox1">Product Development</label>
+                    
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" id="inlineCheckbox2" value="option2">
+                    <label class="form-check-label" for="inlineCheckbox2">Vendor Assigned</label>
+                </div>
+                <br>
+                <br>
+                <!-- SELECTED -->
+                <div class="mb-4 row">
+                    <label for="From" class="col-sm-2 col-form-label">From</label>
+                    <div class="col-md-8">
+                        <select class="form-select" aria-label="Default select example">
+                            {% for agent in change_agent %}
+                            <option name="cnt03_from" value="{{ agent[0] }}">{{ agent[1] }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="mb-4 row">
+                    <label for="To" class="col-sm-2 col-form-label">To</label>
+                    <div class="col-md-8">
+                        <select class="form-select" aria-label="Default select example">
+                            {% for agent in change_agent %}
+                            <option name="cnt03_to" value="{{ agent[0] }}">{{ agent[1] }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="mb-4" style="text-align: center;">
+                    <button class="btn btn-warning" type="submit"><i class="bi bi-floppy-fill"></i> Save</button>
+                    <button class="btn btn-danger"><a href="/" style="text-decoration: none; color: white;">Cancel</a></button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

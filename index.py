@@ -12,6 +12,25 @@ def home():
     return render_template("index.html")
 
 
+@app.route("/change_agent", methods=["GET", "POST"])
+def change_agent():
+    if request.method == "POST":
+        # cnt03_from = request.form["cnt03_from"]
+        # cnt03_to = request.form["cnt03_to"]
+        # print(cnt03_from, cnt03_to)
+        return redirect("/change_agent")
+
+    else:
+        conexion = obtener_conexion()
+        cursor = conexion.cursor()
+        cursor.execute(
+            "SELECT CNT03,CNTDE1 FROM CNTRLL WHERE CNT01 = '216' and trim(substr(cntde1,43,2)) <> 'N' ORDER BY CNTDE1"
+        )
+        change_agent = cursor.fetchall()
+        cursor.close()
+        conexion.close()
+        return render_template("change_agent.html", change_agent=change_agent)
+
 @app.route("/non_returnable_parts", methods=["GET", "POST"])
 def non_returnable_parts():
     if request.method == "POST":
