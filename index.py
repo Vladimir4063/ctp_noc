@@ -15,10 +15,113 @@ def home():
 @app.route("/change_agent", methods=["GET", "POST"])
 def change_agent():
     if request.method == "POST":
-        # cnt03_from = request.form["cnt03_from"]
-        # cnt03_to = request.form["cnt03_to"]
-        # print(cnt03_from, cnt03_to)
-        return redirect("/change_agent")
+
+        product_development = int(request.form.get('product_development', '0'))
+        vendor_assigned = int(request.form.get('vendor_assigned', '0'))
+        cnt03_from = request.form["cnt03_from"]
+        cnt03_to = request.form["cnt03_to"]
+
+        if cnt03_from != cnt03_to:
+
+            if product_development == 1 and vendor_assigned == 1:
+                conexion = obtener_conexion()
+                cursor = conexion.cursor()
+                # USER FROM
+                cursor.execute("select ususer from CSUSER where uspurc = %s", (cnt03_from,))
+                purnofrom = cursor.fetchone()[0]
+
+                # USER DESTINY
+                cursor.execute("select ususer from CSUSER where uspurc = %s", (cnt03_to,))
+                purnoto = cursor.fetchone()[0]
+
+                # UPDATES
+                # update file projects header
+                cursor.execute("update PRDVLH set PRPECH = %s where PRPECH = %s;", (purnoto, purnofrom))
+                conexion.commit()
+
+                # update file projects detail
+                cursor.execute("update PRDVLD set PRDUSR = %s where PRDUSR = %s;", (purnoto, purnofrom))
+                conexion.commit()
+
+                # update vendors
+                cursor.execute("update VNMAS set `VM#POY` = %s where `VM#POY` = %s;", (purnoto, purnofrom))
+                conexion.commit()
+                cursor.close()
+                conexion.close()
+
+                flash("Records updated.")
+                return redirect("/change_agent")
+
+            elif product_development == 1 and vendor_assigned == 0:
+                conexion = obtener_conexion()
+                cursor = conexion.cursor()
+                # USER FROM
+                cursor.execute(
+                    "select ususer from CSUSER where uspurc = %s", (cnt03_from,)
+                )
+                purnofrom = cursor.fetchone()[0]
+
+                # USER DESTINY
+                cursor.execute(
+                    "select ususer from CSUSER where uspurc = %s", (cnt03_to,)
+                )
+                purnoto = cursor.fetchone()[0]
+
+                # UPDATES
+                # update file projects header
+                cursor.execute(
+                    "update PRDVLH set PRPECH = %s where PRPECH = %s;",
+                    (purnoto, purnofrom),
+                )
+                conexion.commit()
+
+                # update file projects detail
+                cursor.execute(
+                    "update PRDVLD set PRDUSR = %s where PRDUSR = %s;",
+                    (purnoto, purnofrom),
+                )
+                conexion.commit()
+                cursor.close()
+                conexion.close()
+
+                flash("Records updated.")
+                return redirect("/change_agent")
+
+            elif product_development == 0 and vendor_assigned == 1:
+                conexion = obtener_conexion()
+                cursor = conexion.cursor()
+                # USER FROM
+                cursor.execute(
+                    "select ususer from CSUSER where uspurc = %s", (cnt03_from,)
+                )
+                purnofrom = cursor.fetchone()[0]
+
+                # USER DESTINY
+                cursor.execute(
+                    "select ususer from CSUSER where uspurc = %s", (cnt03_to,)
+                )
+                purnoto = cursor.fetchone()[0]
+
+                # UPDATES
+                # update vendors
+                cursor.execute(
+                    "update VNMAS set `VM#POY` = %s where `VM#POY` = %s;",
+                    (purnoto, purnofrom,),
+                )
+                conexion.commit()
+                cursor.close()
+                conexion.close()
+
+                flash("Records updated.")
+                return redirect("/change_agent")
+
+            else:
+                flash("Not Changes.")
+                return redirect("/change_agent")
+
+        else:
+            flash("From and to must be different.")
+            return redirect("/change_agent")
 
     else:
         conexion = obtener_conexion()

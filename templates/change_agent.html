@@ -2,61 +2,110 @@
 {% block body %}
 
 
-<div class="container">
 
-    <!-- Navigation -->
-    <ul style="text-decoration: none;">
-        <li>
-            <a style="color: black;" href="/">Home</a>
-            <a>> Change Agent</a>
-        </li>
-    </ul>
+<!-- Navigation -->
+<ul style="text-decoration: none;">
+    <li>
+        <a style="color: black;" href="/">Home</a>
+        <a>> Change Agent</a>
+    </li>
+</ul>
 
 
-    <div class="container d-flex" style="justify-content: center;">
-        <div class="col-md-4">
+<div class="container d-flex" style="justify-content: center;">
+    <div class="col-md-4">
 
-            <!-- FORM  -->
-            <form method="POST">
-                <!-- CHECKBOXS -->
-                <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1">
-                    <label class="form-check-label" for="inlineCheckbox1">Product Development</label>
-                    
+        <!-- FORM  -->
+        <form id="myForm" method="POST">
+            <!-- CHECKBOXS -->
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" id="inlineCheckbox1" name="product_development" value="1">
+                <label class="form-check-label" for="inlineCheckbox1">Product Development</label>
+                
+            </div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" id="inlineCheckbox2" name="vendor_assigned" value="1">
+                <label class="form-check-label" for="inlineCheckbox2">Vendor Assigned</label>
+            </div>
+            <br>
+            <br>
+            <!-- SELECTED -->
+            <div class="mb-4 row">
+                <label for="From" class="col-sm-2 col-form-label">From</label>
+                <div class="col-md-8">
+                    <select class="form-select" name="cnt03_from" aria-label="Default select example">
+                        {% for agent in change_agent %}
+                        <option value="{{ agent[0] }}">{{ agent[1] }}</option>
+                        {% endfor %}
+                    </select>
                 </div>
-                <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="checkbox" id="inlineCheckbox2" value="option2">
-                    <label class="form-check-label" for="inlineCheckbox2">Vendor Assigned</label>
+            </div>
+            <div class="mb-4 row">
+                <label for="To" class="col-sm-2 col-form-label">To</label>
+                <div class="col-md-8">
+                    <select class="form-select" name="cnt03_to" id="cnt03_to" aria-label="Default select example">
+                        {% for agent in change_agent %}
+                        <option value="{{ agent[0] }}">{{ agent[1] }}</option>
+                        {% endfor %}
+                    </select>
                 </div>
-                <br>
-                <br>
-                <!-- SELECTED -->
-                <div class="mb-4 row">
-                    <label for="From" class="col-sm-2 col-form-label">From</label>
-                    <div class="col-md-8">
-                        <select class="form-select" aria-label="Default select example">
-                            {% for agent in change_agent %}
-                            <option name="cnt03_from" value="{{ agent[0] }}">{{ agent[1] }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                </div>
-                <div class="mb-4 row">
-                    <label for="To" class="col-sm-2 col-form-label">To</label>
-                    <div class="col-md-8">
-                        <select class="form-select" aria-label="Default select example">
-                            {% for agent in change_agent %}
-                            <option name="cnt03_to" value="{{ agent[0] }}">{{ agent[1] }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                </div>
-                <div class="mb-4" style="text-align: center;">
-                    <button class="btn btn-warning" type="submit"><i class="bi bi-floppy-fill"></i> Save</button>
-                    <button class="btn btn-danger"><a href="/" style="text-decoration: none; color: white;">Cancel</a></button>
-                </div>
-            </form>
+            </div>
+            <div class="mb-4" style="text-align: center;">
+                <button class="btn btn-warning" id="submitBtn" type="button"><i class="bi bi-floppy-fill"></i> Save</button>
+                <button class="btn btn-danger"><a href="/" style="text-decoration: none; color: white;">Cancel</a></button>
+            </div>
+        </form>
+
+        <!-- FLASH NOTIFICATION -->
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <br />
+        {% for message in messages %}
+        <div class="alert alert-warning alert-dismissible" role="alert">
+            <strong>{{ message }}</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
     </div>
+
+    <!-- Incluir SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+
+    <!-- Script personalizado para mostrar SweetAlert2 -->
+    <script>
+        document.getElementById('submitBtn').addEventListener('click', function () {
+            var toValue = document.getElementById('cnt03_to').options[document.getElementById('cnt03_to').selectedIndex].text;
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "Are you sure to assign all vendors or projects to " + toValue + "?",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#F79F00',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, assign it!',
+                customClass: {
+                    confirmButton: 'swal2-confirm-custom',
+                    cancelButton: 'swal2-cancel-custom'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('myForm').submit();
+                }
+            });
+        });
+    </script>
+    <style>
+        .swal2-confirm-custom {
+            border-radius: 0 !important;
+            /* Hacer que el botón Confirmar sea cuadrado */
+        }
+    
+        .swal2-cancel-custom {
+            border-radius: 0 !important;
+            /* Hacer que el botón Cancelar sea cuadrado */
+        }
+    </style>
 </div>
 {% endblock %}
