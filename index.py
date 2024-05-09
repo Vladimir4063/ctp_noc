@@ -12,6 +12,52 @@ def home():
     return render_template("index.html")
 
 
+# suspendedparts
+@app.route("/suspendedparts", methods=["GET", "POST"])
+def suspendedparts():
+    if request.method == "POST":
+        vendorno = request.form["vendorno"]
+        partno = request.form["partno"]
+
+        print(vendorno, partno)
+
+        if len(vendorno) == 0:
+            vendorno = "coalesce"
+        if len(partno) == 0:
+            partno = "coalesce"
+
+        conexion = obtener_conexion()
+        cursor = conexion.cursor()
+        cursor.execute(
+            """SELECT VETOPARTS.VENDORNO,
+       VNMAS.VMNAME AS VENDORNAME,
+       VETOPARTS.PARTNO,
+       INMSTA.IMDSC AS PART_DESCRIPTION,
+       VETOPARTS.VETOSTAT AS STATUS
+FROM VETOPARTS INNER JOIN VNMAS ON VETOPARTS.VENDORNO = VNMAS.VMVNUM
+INNER JOIN INMSTA ON VETOPARTS.PARTNO = INMSTA.IMPTN
+WHERE VETOPARTS.VENDORNO = %s AND VETOPARTS.PARTNO = %s""", (vendorno, partno,)
+        )
+        data_supended = cursor.fetchall()
+        cursor.close()
+        conexion.close()
+
+        return render_template(
+            "suspended_parts/suspendedparts.html", data_supended=data_supended
+        )
+    else:
+        return render_template("suspended_parts/suspendedparts.html")
+
+
+@app.route("/newsuspendedparts")
+def newsuspendedparts():
+    return render_template("suspended_parts/newsuspendedparts.html")
+
+@app.route("/delete_suspendedparts", methods=["GET", "POST"])
+def delete_suspendedparts():
+    return redirect("/suspendedparts")
+
+# change_agent
 @app.route("/change_agent", methods=["GET", "POST"])
 def change_agent():
     if request.method == "POST":

@@ -1,0 +1,81 @@
+{% extends "layout.html" %}
+{% block body %}
+
+<ul style="text-decoration: none;">
+    <li>
+        <a style="color: black;" href="/">Home</a>
+        <a>></a>
+        <a style="color: black;" href="/suspendedparts">Supended Parts</a>
+        <a>> New Supended Parts</a>
+    </li>
+</ul>
+
+<div class="col-md-10 p-4">
+
+    <!-- FORM ADD ROW -->
+
+    <form class="row g-3" method="POST">
+        <div class="col-md-6">
+            <input type="text" class="form-control" name="description" placeholder="Vendor No." required>
+        </div>
+        <div class="col-md-4">
+            <button type="submit" class="btn btn-primary">Search</button>
+        </div>
+
+        <!-- Vendor Name -->
+        <div class="col-md-6">
+            <input type="text" class="form-control" name="description" placeholder="Vendor Name" required>
+            <select class="form-select form-control mt-3" aria-label="Default select example">
+                <option selected></option>
+                <option value="1">One</option>
+                <option value="2">Two</option>
+                <option value="3">Three</option>
+            </select>
+        </div>
+        <div class="col-md-4">
+            <button type="submit" class="btn btn-primary">Search</button>
+        </div>
+        
+
+        <!-- Part No. -->
+        <div class="col-md-6">
+            <input type="text" class="form-control" name="description" placeholder="Part No." required>
+            <input type="text" class="form-control mt-3" name="description" placeholder="" required>
+        </div>
+        <div class="col-md-4">
+            <button type="submit" class="btn btn-primary">Search</button>
+        </div>
+        
+        <!-- Additional Info. -->
+        <div class="col-md-6">
+            <textarea type="text"  rows="10" class="form-control" name="description" placeholder="Additional Info."> </textarea>
+        </div>
+        
+        <!-- Checks  -->
+        <div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1">
+                <label class="form-check-label" for="inlineCheckbox1">Active</label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" id="inlineCheckbox2" value="option2">
+                <label class="form-check-label" for="inlineCheckbox2">Inactive</label>
+            </div>
+        </div>
+    </form>
+
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    <br />
+    {% for message in messages %}
+    <div class="alert alert-warning alert-dismissible" role="alert">
+        <strong>{{ message }}</strong>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
+
+</div>
+
+{% endblock %}
