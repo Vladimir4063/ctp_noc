@@ -33,10 +33,15 @@ def suspendedparts():
        VNMAS.VMNAME AS VENDORNAME,
        VETOPARTS.PARTNO,
        INMSTA.IMDSC AS PART_DESCRIPTION,
-       VETOPARTS.VETOSTAT AS STATUS
+       VETOPARTS.VETOSTAT AS STATUS,
+       VETOPARTS.VETOCODE AS CODE
 FROM VETOPARTS INNER JOIN VNMAS ON VETOPARTS.VENDORNO = VNMAS.VMVNUM
 INNER JOIN INMSTA ON VETOPARTS.PARTNO = INMSTA.IMPTN
-WHERE VETOPARTS.VENDORNO = %s AND VETOPARTS.PARTNO = %s""", (vendorno, partno,)
+WHERE VETOPARTS.VENDORNO = %s AND VETOPARTS.PARTNO = %s""",
+            (
+                vendorno,
+                partno,
+            ),
         )
         data_supended = cursor.fetchall()
         cursor.close()
@@ -53,8 +58,15 @@ WHERE VETOPARTS.VENDORNO = %s AND VETOPARTS.PARTNO = %s""", (vendorno, partno,)
 def newsuspendedparts():
     return render_template("suspended_parts/newsuspendedparts.html")
 
-@app.route("/delete_suspendedparts", methods=["GET", "POST"])
-def delete_suspendedparts():
+
+@app.route("/delete_suspendedparts/<id>", methods=["GET", "POST"])
+def delete_suspendedparts(vetocode):
+    conexion = obtener_conexion()
+    cursor = conexion.cursor()
+    cursor.execute("delete from VETOPARTS where VETOCODE = %s", (vetocode,))
+    conexion.commit()
+    cursor.close()
+    conexion.close()
     return redirect("/suspendedparts")
 
 # change_agent
